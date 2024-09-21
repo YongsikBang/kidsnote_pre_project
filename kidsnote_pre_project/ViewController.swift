@@ -9,13 +9,13 @@ import UIKit
 
 class ViewController: UIViewController {
    private let infoLabel: UILabel = {
-        let label = UILabel()
-        label.text = "KidsNote Pre Project"
-        label.font = UIFont.boldSystemFont(ofSize: 20)
-        label.textAlignment = .center
-        label.textColor = .black
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+       let label = UILabel()
+       label.text = .localized(of: .splashText)
+       label.font = UIFont.boldSystemFont(ofSize: 20)
+       label.textAlignment = .center
+       label.textColor = .black
+       label.translatesAutoresizingMaskIntoConstraints = false
+       return label
     }()
     
     override func viewDidLoad() {
@@ -49,7 +49,4 @@ class ViewController: UIViewController {
         splashView.modalPresentationStyle = .fullScreen
         self.present(splashView, animated: true)
     }
-   
-
 }
-

@@ -8,9 +8,9 @@
 import UIKit
 
 class SplashViewController: UIViewController {
-   private let infoLabel: UILabel = {
+    private let infoLabel: UILabel = {
         let label = UILabel()
-        label.text = "KidsNote Pre Project"
+        label.text = .localized(of: .splashText)
         label.font = UIFont.boldSystemFont(ofSize: 20)
         label.textAlignment = .center
         label.textColor = .black
