@@ -16,6 +16,9 @@
 		2DC073BB2C9E9BF600C10768 /* kidsnote_pre_projectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC073BA2C9E9BF600C10768 /* kidsnote_pre_projectTests.swift */; };
 		2DC073C52C9E9BF600C10768 /* kidsnote_pre_projectUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC073C42C9E9BF600C10768 /* kidsnote_pre_projectUITests.swift */; };
 		2DC073C72C9E9BF600C10768 /* kidsnote_pre_projectUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC073C62C9E9BF600C10768 /* kidsnote_pre_projectUITestsLaunchTests.swift */; };
+		2DC073D42C9EA22B00C10768 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC073D32C9EA22B00C10768 /* SplashViewController.swift */; };
+		2DC073D82C9EA37800C10768 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC073D72C9EA37800C10768 /* HomeViewController.swift */; };
+		2DC073DB2C9EA9B600C10768 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC073DA2C9EA9B600C10768 /* Logger.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +52,9 @@
 		2DC073C02C9E9BF600C10768 /* kidsnote_pre_projectUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = kidsnote_pre_projectUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DC073C42C9E9BF600C10768 /* kidsnote_pre_projectUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = kidsnote_pre_projectUITests.swift; sourceTree = "<group>"; };
 		2DC073C62C9E9BF600C10768 /* kidsnote_pre_projectUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = kidsnote_pre_projectUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		2DC073D32C9EA22B00C10768 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
+		2DC073D72C9EA37800C10768 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		2DC073DA2C9EA9B600C10768 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +108,9 @@
 				2DC073A32C9E9BF400C10768 /* AppDelegate.swift */,
 				2DC073A52C9E9BF400C10768 /* SceneDelegate.swift */,
 				2DC073A72C9E9BF400C10768 /* ViewController.swift */,
+				2DC073D52C9EA23A00C10768 /* Splash */,
+				2DC073D62C9EA36200C10768 /* Home */,
+				2DC073D92C9EA99B00C10768 /* Utils */,
 				2DC073A92C9E9BF400C10768 /* Main.storyboard */,
 				2DC073AC2C9E9BF600C10768 /* Assets.xcassets */,
 				2DC073AE2C9E9BF600C10768 /* LaunchScreen.storyboard */,
@@ -125,6 +134,30 @@
 				2DC073C62C9E9BF600C10768 /* kidsnote_pre_projectUITestsLaunchTests.swift */,
 			);
 			path = kidsnote_pre_projectUITests;
+			sourceTree = "<group>";
+		};
+		2DC073D52C9EA23A00C10768 /* Splash */ = {
+			isa = PBXGroup;
+			children = (
+				2DC073D32C9EA22B00C10768 /* SplashViewController.swift */,
+			);
+			path = Splash;
+			sourceTree = "<group>";
+		};
+		2DC073D62C9EA36200C10768 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				2DC073D72C9EA37800C10768 /* HomeViewController.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		2DC073D92C9EA99B00C10768 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				2DC073DA2C9EA9B600C10768 /* Logger.swift */,
+			);
+			path = Utils;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -258,9 +291,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2DC073D82C9EA37800C10768 /* HomeViewController.swift in Sources */,
+				2DC073DB2C9EA9B600C10768 /* Logger.swift in Sources */,
 				2DC073A82C9E9BF400C10768 /* ViewController.swift in Sources */,
 				2DC073A42C9E9BF400C10768 /* AppDelegate.swift in Sources */,
 				2DC073A62C9E9BF400C10768 /* SceneDelegate.swift in Sources */,
+				2DC073D42C9EA22B00C10768 /* SplashViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
