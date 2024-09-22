@@ -10,7 +10,7 @@ import Foundation
 struct BookInfo: Codable {
     let kind: String
     let totalItems: Int
-    let items:[BookItem]
+    let items:[BookItem]?
 }
 
 struct BookItem: Codable {
@@ -23,10 +23,10 @@ struct BookItem: Codable {
 
 struct VolumeInfo: Codable {
     let title: String
-    let authors: [String]
-    let publisher: String
-    let publishedDate: String
-    let description: String
+    let authors: [String]?
+    let publisher: String?
+    let publishedDate: String?
+    let description: String?
     let industryIdentifiers: [IndustryIdentifier]?
     let imageLinks: ImageLinks?
 }

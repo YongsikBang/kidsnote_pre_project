@@ -11,24 +11,24 @@ struct BookDetailInfo: Codable {
     let kind, id, etag: String
     let selfLink: String
     let volumeInfo: DetailVolumeInfo
-    let saleInfo: SaleInfo
+    let saleInfo: SaleInfo?
 }
 
 struct DetailVolumeInfo: Codable {
     let title: String
-    let authors: [String]
-    let publisher, publishedDate, description: String
-    let industryIdentifiers: [IndustryIdentifier]
+    let authors: [String]?
+    let publisher, publishedDate, description: String?
+    let industryIdentifiers: [IndustryIdentifier]?
     let pageCount: Int?
-    let printType, mainCategory: String
-    let categories: [String]
-    let averageRating: Double
-    let ratingsCount: Int
-    let contentVersion: String
+    let printType, mainCategory: String?
+    let categories: [String]?
+    let averageRating: Double?
+    let ratingsCount: Int?
+    let contentVersion: String?
     let imageLinks: DetailImageLinks?
-    let language: String
-    let infoLink: String
-    let canonicalVolumeLink: String
+    let language: String?
+    let infoLink: String?
+    let canonicalVolumeLink: String?
 }
 
 struct DetailImageLinks: Codable {
@@ -37,15 +37,15 @@ struct DetailImageLinks: Codable {
 }
 
 struct SaleInfo: Codable {
-    let country, saleability: String
-    let isEbook: Bool
-    let listPrice, retailPrice: Price
-    let buyLink: String
+    let country, saleability: String?
+    let isEbook: Bool?
+    let listPrice, retailPrice: Price?
+    let buyLink: String?
 }
 
 struct Price: Codable {
-    let amount: Double
-    let currencyCode: String
+    let amount: Double?
+    let currencyCode: String?
 }
 
 
