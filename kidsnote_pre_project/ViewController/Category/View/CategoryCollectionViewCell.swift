@@ -82,12 +82,10 @@ class CategoryCollectionViewCell: UICollectionViewCell {
         cancellables.forEach { $0.cancel() }
         cancellables.removeAll()
         
-        logger("viewmodel : \(viewModel)", options: [.codePosition])
         bookImageView.image = nil
         viewModel.$bookImage
             .receive(on: DispatchQueue.main)
             .sink { [weak self] image in
-                logger("image success", options: [.codePosition])
                 guard let self else { return }
                 bookImageView.image = image
             }

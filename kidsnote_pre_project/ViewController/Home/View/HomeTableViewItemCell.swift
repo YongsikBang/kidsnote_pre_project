@@ -15,6 +15,7 @@ class HomeTableViewItemCell: UITableViewCell, UICollectionViewDataSource, UIColl
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
@@ -30,7 +31,6 @@ class HomeTableViewItemCell: UITableViewCell, UICollectionViewDataSource, UIColl
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
-    
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()

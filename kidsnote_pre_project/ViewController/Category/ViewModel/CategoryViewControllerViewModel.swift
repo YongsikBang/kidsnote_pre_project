@@ -9,7 +9,7 @@ import UIKit
 import Combine
 
 class CategoryViewControllerViewModel: NSObject, ObservableObject {
-    var searchText: String?
+    let searchText: String
     
     private let networkManager = NetworkManager()
     private var cancellables = Set<AnyCancellable>()
@@ -20,7 +20,7 @@ class CategoryViewControllerViewModel: NSObject, ObservableObject {
     
     private(set) var itemSelectSubject = PassthroughSubject<String, Never>()
     
-    init(searchText: String? = nil) {
+    init(searchText: String) {
         self.searchText = searchText
     }
     

@@ -10,7 +10,7 @@ import Combine
 class HomeBookCollectionViewCell: UICollectionViewCell {
     private var cancellables = Set<AnyCancellable>()
     
-    let bookImageView: UIImageView = {
+    private let bookImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.backgroundColor = .clear
         imageView.contentMode = .scaleToFill
@@ -19,7 +19,7 @@ class HomeBookCollectionViewCell: UICollectionViewCell {
         return imageView
     }()
     
-    let titleLabel: UILabel = {
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 10)
         label.textColor = .systemGray
@@ -28,7 +28,7 @@ class HomeBookCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    let authorLabel: UILabel = {
+    private let authorLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 10)
         label.textColor = .systemGray
@@ -37,7 +37,7 @@ class HomeBookCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    let ratingLabel: UILabel = {
+    private let ratingLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 10)
         label.textColor = .systemGray
@@ -47,7 +47,7 @@ class HomeBookCollectionViewCell: UICollectionViewCell {
     }()
     
     // 별표 이미지 뷰
-    let starImageView: UIImageView = {
+    private let starImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "star.fill")  // SF Symbol 사용 (별 모양)
         imageView.tintColor = .systemGray  // 별 색상

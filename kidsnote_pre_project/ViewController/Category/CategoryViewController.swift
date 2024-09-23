@@ -15,7 +15,7 @@ class CategoryViewController: UIViewController {
     
     private var cancellables = Set<AnyCancellable>()
     
-    let collectionView: UICollectionView = {
+    private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.estimatedItemSize = .zero
@@ -87,7 +87,8 @@ class CategoryViewController: UIViewController {
     }
     
     private func navigateToDetailView(bookID: String) {
-        let bookDetailView = BookDetailViewController()
+        let bookDetailViewModel = BookDetailViewControllerViewModel(bookID: bookID)
+        let bookDetailView = BookDetailViewController(bookId: bookID, viewModel: bookDetailViewModel)
         let backButton = UIBarButtonItem(title: categoryTitle, style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem = backButton
         self.navigationController?.pushViewController(bookDetailView, animated: true)

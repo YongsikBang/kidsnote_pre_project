@@ -12,7 +12,7 @@ import Combine
 class HomeViewController: UIViewController {
     
     private var viewModel = HomeViewControllerViewModel()
-    private var cancellable = Set<AnyCancellable>()
+    private var cancellables = Set<AnyCancellable>()
     
     private let searchBar = UISearchBar()
     
@@ -34,6 +34,7 @@ class HomeViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
+    
     private let audioBookButton: UIButton = {
         let button = UIButton()
         button.setTitle(.localized(of: .audioBookButtonText), for: .normal)
@@ -133,7 +134,7 @@ class HomeViewController: UIViewController {
                 guard let self else { return }
                 tableView.reloadData()
             })
-            .store(in: &cancellable)
+            .store(in: &cancellables)
         
         viewModel.$errorMessage
             .receive(on: DispatchQueue.main)
@@ -143,7 +144,7 @@ class HomeViewController: UIViewController {
                     showErrorAlert(message: message)
                 }
             })
-            .store(in: &cancellable)
+            .store(in: &cancellables)
         
         // titleTappedSubject 구독
         viewModel.titleTappedSubject
@@ -153,7 +154,7 @@ class HomeViewController: UIViewController {
                 
                 navigationToNext(type: .category, categoryTitle: categoryTitle)
             }
-            .store(in: &cancellable)
+            .store(in: &cancellables)
         
         // itemSelectedSubject 구독
         viewModel.itemSelectedSubject
@@ -162,7 +163,7 @@ class HomeViewController: UIViewController {
                 guard let self else { return }
                 navigationToNext(type: .detail, bookID: bookID)
             }
-            .store(in: &cancellable)
+            .store(in: &cancellables)
     }
     
     private func requestEBookInfo() {
@@ -212,17 +213,19 @@ class HomeViewController: UIViewController {
     }
     
     private func navigationToNext(type: NextViewType, categoryTitle: String? = nil, bookID: String? = nil) {
+        let backButton = UIBarButtonItem(title: .localized(of: .navigationBackButtonText), style: .plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem = backButton
+        
         switch type {
         case .category:
             guard let categoryTitle = categoryTitle else { return }
             let categoryViewModel = CategoryViewControllerViewModel(searchText: categoryTitle)
             let categoryView = CategoryViewController(categoryTitle: categoryTitle, viewModel: categoryViewModel)
-            let backButton = UIBarButtonItem(title: .localized(of: .navigationBackButtonText), style: .plain, target: nil, action: nil)
-            navigationItem.backBarButtonItem = backButton
             self.navigationController?.pushViewController(categoryView, animated: true)
         case .detail:
             guard let bookID = bookID else { return }
-            let bookDetailView = BookDetailViewController()
+            let bookDetailViewmodel = BookDetailViewControllerViewModel(bookID: bookID)
+            let bookDetailView = BookDetailViewController(bookId: bookID, viewModel: bookDetailViewmodel)
             self.navigationController?.pushViewController(bookDetailView, animated: true)
         }
     }

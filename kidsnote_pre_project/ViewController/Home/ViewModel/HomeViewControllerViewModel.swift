@@ -21,22 +21,6 @@ final class HomeViewControllerViewModel: NSObject, ObservableObject {
     private(set) var titleTappedSubject = PassthroughSubject<String, Never>()
     private(set) var itemSelectedSubject = PassthroughSubject<String, Never>()
     
-    func detail(bookID: String) {
-        networkManager.detailBookInfo(bookID: bookID)
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    self.errorMessage = error.localizedDescription
-                }
-            }, receiveValue: { response in
-                logger("response : \(response)", options: [.date,.codePosition])
-            })
-            .store(in: &cancellables)
-    }
-    
     private func search(text: String) async throws -> [BookItem] {
         do {
             // 네트워크 요청을 async 방식으로 처리
