@@ -20,7 +20,6 @@ class SplashViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupConfigure()
         setupConstraint()
         startSplashAnimation()
@@ -57,6 +56,6 @@ class SplashViewController: UIViewController {
         let homeView = HomeViewController()
         homeView.modalTransitionStyle = .crossDissolve
         homeView.modalPresentationStyle = .fullScreen
-        present(homeView, animated: true)
+        self.navigationController?.setViewControllers([homeView], animated: true)
     }
 }

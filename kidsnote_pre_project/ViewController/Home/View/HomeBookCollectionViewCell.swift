@@ -6,12 +6,13 @@
 //
 
 import UIKit
-
+import Combine
 class HomeBookCollectionViewCell: UICollectionViewCell {
+    private var cancellables = Set<AnyCancellable>()
+    
     let bookImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "photo")
-        imageView.backgroundColor = .lightGray
+        imageView.backgroundColor = .clear
         imageView.contentMode = .scaleToFill
         imageView.clipsToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -83,18 +84,19 @@ class HomeBookCollectionViewCell: UICollectionViewCell {
                 titleLabel.topAnchor.constraint(equalTo: bookImageView.bottomAnchor, constant: 8),
                 titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
                 titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-                titleLabel.heightAnchor.constraint(equalToConstant: 21),
+                titleLabel.heightAnchor.constraint(equalToConstant: 12),
                 
                 // authorLabel constraints
                 authorLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
                 authorLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
                 authorLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-                authorLabel.heightAnchor.constraint(equalToConstant: 21),
+                authorLabel.heightAnchor.constraint(equalToConstant: 12),
                 
                 // ratingLabel constraints
                 ratingLabel.topAnchor.constraint(equalTo: authorLabel.bottomAnchor),
                 ratingLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-                ratingLabel.heightAnchor.constraint(equalToConstant: 21),
+                ratingLabel.heightAnchor.constraint(equalToConstant: 12),
+                ratingLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
                 
                 // starImageView constraints (별표는 ratingLabel 옆에 배치)
                 starImageView.centerYAnchor.constraint(equalTo: ratingLabel.centerYAnchor),
@@ -105,15 +107,20 @@ class HomeBookCollectionViewCell: UICollectionViewCell {
         }
     
     func configure(with viewModel: BookItemViewModel) {
-        contentView.backgroundColor = .red
+        contentView.backgroundColor = .clear
         titleLabel.text = viewModel.title
         authorLabel.text = viewModel.author
         ratingLabel.text = viewModel.rating
         starImageView.isHidden = true
         
-        if let imageUrl = viewModel.imageUrl {
-            bookImageView.loadImage(from: imageUrl)
-        }
-       
+        cancellables.forEach { $0.cancel() }
+        cancellables.removeAll()
+        
+        viewModel.$bookImage
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] image in
+                self?.bookImageView.image = image
+            }
+            .store(in: &cancellables)
     }
 }

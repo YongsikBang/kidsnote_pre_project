@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D5AF43B2CA1597C00E08686 /* BookDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5AF43A2CA1597C00E08686 /* BookDetailViewController.swift */; };
+		2D5AF43E2CA15B0500E08686 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5AF43D2CA15B0500E08686 /* CategoryViewController.swift */; };
+		2D5AF4412CA15B6B00E08686 /* CategoryViewControllerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5AF4402CA15B6B00E08686 /* CategoryViewControllerViewModel.swift */; };
 		2DC073A42C9E9BF400C10768 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC073A32C9E9BF400C10768 /* AppDelegate.swift */; };
 		2DC073A62C9E9BF400C10768 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC073A52C9E9BF400C10768 /* SceneDelegate.swift */; };
 		2DC073A82C9E9BF400C10768 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC073A72C9E9BF400C10768 /* ViewController.swift */; };
@@ -51,6 +54,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2D5AF43A2CA1597C00E08686 /* BookDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookDetailViewController.swift; sourceTree = "<group>"; };
+		2D5AF43D2CA15B0500E08686 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
+		2D5AF4402CA15B6B00E08686 /* CategoryViewControllerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewControllerViewModel.swift; sourceTree = "<group>"; };
 		2DC073A02C9E9BF400C10768 /* kidsnote_pre_project.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = kidsnote_pre_project.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DC073A32C9E9BF400C10768 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2DC073A52C9E9BF400C10768 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -106,6 +112,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2D5AF4392CA1595600E08686 /* BookDetail */ = {
+			isa = PBXGroup;
+			children = (
+				2D5AF43A2CA1597C00E08686 /* BookDetailViewController.swift */,
+			);
+			path = BookDetail;
+			sourceTree = "<group>";
+		};
+		2D5AF43C2CA15AF100E08686 /* Category */ = {
+			isa = PBXGroup;
+			children = (
+				2D5AF43F2CA15B0900E08686 /* ViewModel */,
+				2D5AF43D2CA15B0500E08686 /* CategoryViewController.swift */,
+			);
+			path = Category;
+			sourceTree = "<group>";
+		};
+		2D5AF43F2CA15B0900E08686 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				2D5AF4402CA15B6B00E08686 /* CategoryViewControllerViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		2DC073972C9E9BF400C10768 = {
 			isa = PBXGroup;
 			children = (
@@ -222,6 +253,8 @@
 			children = (
 				2DC073D52C9EA23A00C10768 /* Splash */,
 				2DC073D62C9EA36200C10768 /* Home */,
+				2D5AF43C2CA15AF100E08686 /* Category */,
+				2D5AF4392CA1595600E08686 /* BookDetail */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -383,6 +416,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2D5AF43E2CA15B0500E08686 /* CategoryViewController.swift in Sources */,
 				2DC073EF2C9ED34700C10768 /* BookDetailInfo.swift in Sources */,
 				2DC073F42C9FF9EB00C10768 /* UITableViewCell+Extension.swift in Sources */,
 				2DC073D82C9EA37800C10768 /* HomeViewController.swift in Sources */,
@@ -398,6 +432,8 @@
 				2DC073EA2C9EBC5300C10768 /* BookInfo.swift in Sources */,
 				2DC073F82CA03C5000C10768 /* HomeBookCollectionViewCell.swift in Sources */,
 				2DC073A62C9E9BF400C10768 /* SceneDelegate.swift in Sources */,
+				2D5AF4412CA15B6B00E08686 /* CategoryViewControllerViewModel.swift in Sources */,
+				2D5AF43B2CA1597C00E08686 /* BookDetailViewController.swift in Sources */,
 				2DC073D42C9EA22B00C10768 /* SplashViewController.swift in Sources */,
 				2DC073FA2CA0419E00C10768 /* UIImageView+Extension.swift in Sources */,
 				2DC073DF2C9EB7B000C10768 /* String+LocalizedString.swift in Sources */,

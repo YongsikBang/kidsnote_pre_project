@@ -9,14 +9,19 @@ import Foundation
 import OSLog
 
 extension Logger {
-    private static var map: [String: Logger] = [:]
-    
+    fileprivate static var map: [String: Logger] = [:]
+    fileprivate static let queue = DispatchQueue(label: "loggerQueue", attributes: .concurrent)
+
     fileprivate static func pick(key: String, `default`: Logger) -> Logger {
-        if let exist = map[key] {
-            return exist
-        } else {
-            map[key] = `default`
-            return `default`
+        queue.sync {
+            if let exist = map[key] {
+                return exist
+            } else {
+                queue.async(flags: .barrier) {
+                    map[key] = `default`
+                }
+                return `default`
+            }
         }
     }
 

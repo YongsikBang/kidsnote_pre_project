@@ -60,12 +60,11 @@ class HomeViewController: UIViewController {
     
     private var topButtons = [UIButton]()
     
-    let ebookSearchArray = ["추천 ebook", "건강 정신 신체", "소설 문학", "번들 할인", "만화", "최다 판매 eBook"]
-    let audioBookSearchArray = ["추천 audioBook", "건강 정신 신체", "소설 문학", "번들 할인", "만화", "최다 판매 audioBook"]
+    let ebookSearchArray = ["추천 ebook", "건강/정신/신체", "소설/문학", "번들 할인", "만화", "최다 판매 eBook"]
+    let audioBookSearchArray = ["추천 오디오북", "자서전/전기", "비즈니스/투자", "자기계발", "최다 판매 오디오북"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupConfigure()
         setupConstraint()
         bindViewModel()
@@ -96,9 +95,10 @@ class HomeViewController: UIViewController {
         tableView.register(HomeTableViewItemCell.self, forCellReuseIdentifier: HomeTableViewItemCell.cellReuseIdentifier)
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.estimatedRowHeight = 100
         tableView.separatorStyle = .none
         tableView.allowsSelection = false
+        tableView.estimatedRowHeight = 300
+        tableView.rowHeight = UITableView.automaticDimension
     }
     
     private func setupConstraint() {
@@ -126,15 +126,6 @@ class HomeViewController: UIViewController {
     }
     
     private func bindViewModel() {
-        viewModel.$bookInfo
-            .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] model in
-                guard let self else { return }
-                logger("total book info :\(model.count)", options: [.date,.codePosition])
-                tableView.reloadData()
-            })
-            .store(in: &cancellable)
-        
         viewModel.$dataSource
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] model in
@@ -152,6 +143,25 @@ class HomeViewController: UIViewController {
                 }
             })
             .store(in: &cancellable)
+        
+        // titleTappedSubject 구독
+        viewModel.titleTappedSubject
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] categoryTitle in
+                guard let self else { return }
+                
+                navigationToNext(type: .category, categoryTitle: categoryTitle)
+            }
+            .store(in: &cancellable)
+        
+        // itemSelectedSubject 구독
+        viewModel.itemSelectedSubject
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] bookID in
+                guard let self else { return }
+                navigationToNext(type: .detail, bookID: bookID)
+            }
+            .store(in: &cancellable)
     }
     
     private func requestEBookInfo() {
@@ -162,12 +172,13 @@ class HomeViewController: UIViewController {
         
     }
     
-    private func requestBookDetail() {
-        let bookId = "RMDcnQEACAAJ"
-        viewModel.detail(bookID: bookId)
-    }
-    
     @objc private func topButtonTapped(_ sender: UIButton) {
+        // ViewModel에서 데이터 로드 중인 경우 버튼 동작을 막음
+        if viewModel.isLoading {
+            logger("Data is currently loading, please wait")
+            return
+        }
+        
         topButtons.forEach { $0.isSelected = false}
         sender.isSelected = true
         
@@ -193,6 +204,25 @@ class HomeViewController: UIViewController {
         alert.addAction(UIAlertAction(title: .localized(of: .alertOK), style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
+    
+    enum NextViewType {
+    case category
+        case detail
+    }
+    
+    private func navigationToNext(type: NextViewType, categoryTitle: String? = nil, bookID: String? = nil) {
+        switch type {
+        case .category:
+            guard let categoryTitle = categoryTitle else { return }
+            let categoryViewModel = CategoryViewControllerViewModel(searchText: categoryTitle)
+            let categoryView = CategoryViewController(categoryTitle: categoryTitle, viewModel: categoryViewModel)
+            self.navigationController?.pushViewController(categoryView, animated: true)
+        case .detail:
+            guard let bookID = bookID else { return }
+            let bookDetailView = BookDetailViewController()
+            self.navigationController?.pushViewController(bookDetailView, animated: true)
+        }
+    }
 }
 
 extension HomeViewController: UISearchBarDelegate {
@@ -201,9 +231,7 @@ extension HomeViewController: UISearchBarDelegate {
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        guard let searchText = searchBar.text else { return }
         searchBar.resignFirstResponder()
-//        viewModel.search(text: searchText)
     }
 }
 
@@ -216,6 +244,16 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         let bookItem = viewModel.dataSource[indexPath.row]
         guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeTableViewItemCell.cellReuseIdentifier, for: indexPath) as? HomeTableViewItemCell else { return UITableViewCell() }
         cell.configure(with: bookItem)
+        cell.titleTappedAction = { [weak self] homeBookInfo in
+            guard let self else { return }
+            if let homeBookInfo = homeBookInfo {
+                viewModel.titleTapAction(homeBookInfo: homeBookInfo)
+            }
+        }
+        cell.itemSelectedAction = { [weak self] bookInfo in
+            guard let self else { return }
+            viewModel.itemSelectAction(bookItemViewModel: bookInfo)
+        }
         return cell
     }
     

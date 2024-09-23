@@ -7,34 +7,22 @@
 
 import Foundation
 import Combine
+import UIKit
 
-class HomeViewControllerViewModel {
+final class HomeViewControllerViewModel: NSObject {
     private let networkManager = NetworkManager()
     private var cancellables = Set<AnyCancellable>()
     
-    @Published var bookInfo: [BookItem] = []
     @Published var errorMessage: String?
     @Published var dataSource: [HomeBookInfo] = []
     
-//        func search(text: String) {
-//            networkManager.searchBooks(query: text)
-//                .sink(receiveCompletion: { completion in
-//                    switch completion {
-//                    case .finished:
-//                        break
-//                    case .failure(let error):
-//                        self.errorMessage = error.localizedDescription
-//                    }
-//                }, receiveValue: { bookResponse in
-//                    logger("bookResponse :\(bookResponse)", options: [.date,.codePosition])
-//                    self.bookInfo = bookResponse.items ?? []
-//                })
-//                .store(in: &cancellables)
-//        }
+    var isLoading: Bool = false
+    
+    var titleTappedSubject = PassthroughSubject<String, Never>()
+    var itemSelectedSubject = PassthroughSubject<String, Never>()
     
     func detail(bookID: String) {
         networkManager.detailBookInfo(bookID: bookID)
-            .subscribe(on: DispatchQueue.global())
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { completion in
                 switch completion {
@@ -50,32 +38,12 @@ class HomeViewControllerViewModel {
     }
     
     func search(text: String) async throws -> [BookItem] {
-        //다중호출 처리를 위해 사용
-        //중복 호출 확인을 위해 isContinued로 체크
-        try await withCheckedThrowingContinuation { continuation in
-
-            var isContinued = false
-
-            networkManager.searchBooks(query: text)
-                .receive(on: DispatchQueue.main)
-                .sink(receiveCompletion: { [weak self] completion in
-                    guard let self = self else { return }
-                    if isContinued { return }
-
-                    switch completion {
-                    case .finished:
-                        break
-                    case .failure(let error):
-                        continuation.resume(throwing: error)
-                        isContinued = true
-                    }
-                }, receiveValue: { [weak self] bookInfo in
-                    guard let self = self else { return }
-                    if isContinued { return }
-                    continuation.resume(returning: bookInfo.items ?? [])
-                    isContinued = true
-                })
-                .store(in: &self.cancellables)
+        do {
+            // 네트워크 요청을 async 방식으로 처리
+            let bookInfo = try await networkManager.searchBooks(query: text)
+            return bookInfo.items ?? []
+        } catch {
+            throw error
         }
     }
     
@@ -92,7 +60,7 @@ class HomeViewControllerViewModel {
     }
 
     func requestInitBookInfo(searchTextArray: [String]) async {
-        resetDataSource()
+        isLoading = true  // 데이터 로드 시작 시 로딩 상태를 true로 설정
         
         let homeBookInfoStore = HomeBookInfoStore()
         await withTaskGroup(of: HomeBookInfo?.self) { group in
@@ -110,7 +78,7 @@ class HomeViewControllerViewModel {
 
             for await homeBookInfo in group {
                 if let homeBookInfo = homeBookInfo {
-                    await homeBookInfoStore.append(homeBookInfo)  // Actor를 통해 안전하게 배열 수정
+                    await homeBookInfoStore.append(homeBookInfo)
                 }
             }
         }
@@ -119,16 +87,17 @@ class HomeViewControllerViewModel {
             Task {
                 let sortedArray = await homeBookInfoStore.getSorted()
                 self.dataSource = sortedArray
-                logger("dataSource : \(self.dataSource)", options: [.date, .codePosition])
+                self.isLoading = false
             }
         }
     }
     
-    private func resetDataSource() {
-        if dataSource.count > 0 {
-            dataSource.removeAll()
-            dataSource = []
-        }
+    func titleTapAction(homeBookInfo: HomeBookInfo) {
+        titleTappedSubject.send(homeBookInfo.categoryTitle)
+    }
+    
+    func itemSelectAction(bookItemViewModel: BookItemViewModel) {
+        itemSelectedSubject.send(bookItemViewModel.bookItem.id)
     }
 }
 
@@ -143,8 +112,13 @@ class BookItemViewModel {
     let author: String
     let rating: String
     let imageUrl: String?
+    let bookItem: BookItem
     
-    init(bookItem: BookItem) {
+    @Published var bookImage: UIImage?
+    @Published var bookImageSize: CGSize = .zero
+    
+    init(item: BookItem) {
+        self.bookItem = item
         self.title = bookItem.volumeInfo.title
         self.author = bookItem.volumeInfo.authors?.joined(separator: ", ") ?? "Unknown Author"
         self.rating = bookItem.volumeInfo.publishedDate ?? ""
@@ -152,6 +126,32 @@ class BookItemViewModel {
         let thumbnailUrl = bookItem.volumeInfo.imageLinks?.thumbnail
         let secureImageUrl = thumbnailUrl?.replacingOccurrences(of: "http://", with: "https://")
         self.imageUrl = secureImageUrl
+        
+        loadImage()
     }
+    
+    private func loadImage() {
+            guard let imageUrl = imageUrl, let url = URL(string: imageUrl) else {
+                self.bookImage = UIImage(systemName: "photo")
+                self.bookImageSize = .zero
+                return
+            }
+            
+            // 비동기적으로 이미지 다운로드
+            URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+                if let data = data, let downloadedImage = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        self?.bookImage = downloadedImage  // 이미지 업데이트
+                        self?.bookImageSize = downloadedImage.size  // 이미지 크기 설정
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self?.bookImage = UIImage(systemName: "photo")
+                        self?.bookImageSize = .zero  // 기본 이미지 크기
+                    }
+                }
+            }.resume()
+        }
+    
 }
 

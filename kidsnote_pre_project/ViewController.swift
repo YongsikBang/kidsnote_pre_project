@@ -21,7 +21,6 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        
         setupConfigure()
         setupConstraint()
         
@@ -47,6 +46,6 @@ class ViewController: UIViewController {
         let splashView = SplashViewController()
         splashView.modalTransitionStyle = .crossDissolve
         splashView.modalPresentationStyle = .fullScreen
-        self.present(splashView, animated: true)
+        self.navigationController?.setViewControllers([splashView], animated: true)
     }
 }
