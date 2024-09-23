@@ -37,5 +37,10 @@ struct IndustryIdentifier: Codable {
 
 struct ImageLinks: Codable {
     let smallThumbnail, thumbnail: String?
+    
+    func getThumbnailUrl() -> String? {
+        return self.thumbnail?.replacingOccurrences(of: "http://", with: "https://")
+    }
+    
 }
 

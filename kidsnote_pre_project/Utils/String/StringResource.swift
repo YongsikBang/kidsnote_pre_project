@@ -16,4 +16,6 @@ extension LocalizedString {
     
     static let alertErrorTitle = makeInfo("alert_error_title", "Error", "오류 알럿 타이틀")
     static let alertOK = makeInfo("alert_ok", "OK", "알럿 OK 버튼 타이틀")
+    
+    static let navigationBackButtonText = makeInfo("navigation_back", "뒤로", "네비게이션 뒤로")
 }

@@ -68,7 +68,6 @@ class HomeViewController: UIViewController {
         setupConfigure()
         setupConstraint()
         bindViewModel()
-        requestEBookInfo()
     }
     
     private func setupConfigure() {
@@ -126,6 +125,8 @@ class HomeViewController: UIViewController {
     }
     
     private func bindViewModel() {
+        requestEBookInfo()
+        
         viewModel.$dataSource
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] model in
@@ -206,7 +207,7 @@ class HomeViewController: UIViewController {
     }
     
     enum NextViewType {
-    case category
+        case category
         case detail
     }
     
@@ -216,6 +217,8 @@ class HomeViewController: UIViewController {
             guard let categoryTitle = categoryTitle else { return }
             let categoryViewModel = CategoryViewControllerViewModel(searchText: categoryTitle)
             let categoryView = CategoryViewController(categoryTitle: categoryTitle, viewModel: categoryViewModel)
+            let backButton = UIBarButtonItem(title: .localized(of: .navigationBackButtonText), style: .plain, target: nil, action: nil)
+            navigationItem.backBarButtonItem = backButton
             self.navigationController?.pushViewController(categoryView, animated: true)
         case .detail:
             guard let bookID = bookID else { return }

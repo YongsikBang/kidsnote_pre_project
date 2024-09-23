@@ -9,17 +9,17 @@ import Foundation
 import Combine
 import UIKit
 
-final class HomeViewControllerViewModel: NSObject {
+final class HomeViewControllerViewModel: NSObject, ObservableObject {
     private let networkManager = NetworkManager()
     private var cancellables = Set<AnyCancellable>()
     
-    @Published var errorMessage: String?
-    @Published var dataSource: [HomeBookInfo] = []
+    @Published private(set) var errorMessage: String?
+    @Published private(set) var dataSource: [HomeBookInfo] = []
     
-    var isLoading: Bool = false
+    private(set) var isLoading: Bool = false
     
-    var titleTappedSubject = PassthroughSubject<String, Never>()
-    var itemSelectedSubject = PassthroughSubject<String, Never>()
+    private(set) var titleTappedSubject = PassthroughSubject<String, Never>()
+    private(set) var itemSelectedSubject = PassthroughSubject<String, Never>()
     
     func detail(bookID: String) {
         networkManager.detailBookInfo(bookID: bookID)
@@ -37,7 +37,7 @@ final class HomeViewControllerViewModel: NSObject {
             .store(in: &cancellables)
     }
     
-    func search(text: String) async throws -> [BookItem] {
+    private func search(text: String) async throws -> [BookItem] {
         do {
             // 네트워크 요청을 async 방식으로 처리
             let bookInfo = try await networkManager.searchBooks(query: text)
@@ -49,16 +49,16 @@ final class HomeViewControllerViewModel: NSObject {
     
     actor HomeBookInfoStore {
         private(set) var homeBookInfoArray: [HomeBookInfo] = []
-
+        
         func append(_ info: HomeBookInfo) {
             homeBookInfoArray.append(info)
         }
-
+        
         func getSorted() -> [HomeBookInfo] {
             return homeBookInfoArray.sorted { $0.index < $1.index }
         }
     }
-
+    
     func requestInitBookInfo(searchTextArray: [String]) async {
         isLoading = true  // 데이터 로드 시작 시 로딩 상태를 true로 설정
         
@@ -75,14 +75,14 @@ final class HomeViewControllerViewModel: NSObject {
                     }
                 }
             }
-
+            
             for await homeBookInfo in group {
                 if let homeBookInfo = homeBookInfo {
                     await homeBookInfoStore.append(homeBookInfo)
                 }
             }
         }
-
+        
         DispatchQueue.main.async {
             Task {
                 let sortedArray = await homeBookInfoStore.getSorted()
@@ -107,15 +107,15 @@ struct HomeBookInfo {
     let bookInfos: [BookItem]
 }
 
-class BookItemViewModel {
+class BookItemViewModel: NSObject, ObservableObject {
     let title: String
     let author: String
-    let rating: String
+    let rating: String // rating 데이터가 없어서 publishedDate로 대체
     let imageUrl: String?
     let bookItem: BookItem
     
-    @Published var bookImage: UIImage?
-    @Published var bookImageSize: CGSize = .zero
+    @Published private(set) var bookImage: UIImage?
+    @Published private(set) var bookImageSize: CGSize = .zero
     
     init(item: BookItem) {
         self.bookItem = item
@@ -123,35 +123,38 @@ class BookItemViewModel {
         self.author = bookItem.volumeInfo.authors?.joined(separator: ", ") ?? "Unknown Author"
         self.rating = bookItem.volumeInfo.publishedDate ?? ""
         
-        let thumbnailUrl = bookItem.volumeInfo.imageLinks?.thumbnail
-        let secureImageUrl = thumbnailUrl?.replacingOccurrences(of: "http://", with: "https://")
-        self.imageUrl = secureImageUrl
+        let thumbnailUrl = bookItem.volumeInfo.imageLinks?.getThumbnailUrl()
+        self.imageUrl = thumbnailUrl
         
-        loadImage()
+        super.init()
+        
+        DispatchQueue.main.async {
+            self.loadImage()
+        }
     }
     
     private func loadImage() {
-            guard let imageUrl = imageUrl, let url = URL(string: imageUrl) else {
-                self.bookImage = UIImage(systemName: "photo")
-                self.bookImageSize = .zero
-                return
-            }
-            
-            // 비동기적으로 이미지 다운로드
-            URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-                if let data = data, let downloadedImage = UIImage(data: data) {
-                    DispatchQueue.main.async {
-                        self?.bookImage = downloadedImage  // 이미지 업데이트
-                        self?.bookImageSize = downloadedImage.size  // 이미지 크기 설정
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        self?.bookImage = UIImage(systemName: "photo")
-                        self?.bookImageSize = .zero  // 기본 이미지 크기
-                    }
-                }
-            }.resume()
+        guard let imageUrl = imageUrl, let url = URL(string: imageUrl) else {
+            self.bookImage = UIImage(systemName: "photo")
+            self.bookImageSize = .zero
+            return
         }
+        
+        // 비동기적으로 이미지 다운로드
+        URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            if let data = data, let downloadedImage = UIImage(data: data) {
+                DispatchQueue.main.async {
+                    self?.bookImage = downloadedImage  // 이미지 업데이트
+                    self?.bookImageSize = downloadedImage.size  // 이미지 크기 설정
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self?.bookImage = UIImage(systemName: "photo")
+                    self?.bookImageSize = .zero  // 기본 이미지 크기
+                }
+            }
+        }.resume()
+    }
     
 }
 

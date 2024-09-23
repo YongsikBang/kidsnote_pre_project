@@ -30,7 +30,7 @@ class HomeTableViewItemCell: UITableViewCell, UICollectionViewDataSource, UIColl
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
-
+    
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -40,7 +40,7 @@ class HomeTableViewItemCell: UITableViewCell, UICollectionViewDataSource, UIColl
         layout.sectionInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collectionView
-        }()
+    }()
     
     private var bookViewModels = [BookItemViewModel]()
     
@@ -63,15 +63,15 @@ class HomeTableViewItemCell: UITableViewCell, UICollectionViewDataSource, UIColl
         super.awakeFromNib()
         // Initialization code
     }
-
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
     
     private func setupViews() {
-
+        
         contentView.addSubview(titleView)
         titleView.addSubview(titleLabel)
         titleView.addSubview(arrowImageView)
@@ -141,4 +141,5 @@ class HomeTableViewItemCell: UITableViewCell, UICollectionViewDataSource, UIColl
         let bookViewModel = bookViewModels[indexPath.row]
         itemSelectedAction?(bookViewModel)
     }
+    
 }

@@ -12,6 +12,7 @@ class BookDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.backgroundColor = .white
         logger("viewDidLoad",options:[.codePosition])
 //        logger("viewDidLoad bookdetail : \(bookDetailInfo)",options:[.codePosition])
         // Do any additional setup after loading the view.
