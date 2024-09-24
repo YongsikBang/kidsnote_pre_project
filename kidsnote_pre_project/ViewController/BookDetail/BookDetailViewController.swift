@@ -14,6 +14,7 @@ class BookDetailViewController: UIViewController {
     private var cancellables = Set<AnyCancellable>()
     
     private var sharedContent: String = "책 정보를 불러오는 중입니다..."
+    private var sharedImage: UIImage?
     
     private let tableView: UITableView = {
         let tableview = UITableView()
@@ -41,22 +42,24 @@ class BookDetailViewController: UIViewController {
     }
     
     private func setupConfigure() {
+        
         // 공유 버튼 추가
         let shareImage = UIImage(systemName: "square.and.arrow.up")
         let shareButton = UIBarButtonItem(image: shareImage, style: .plain, target: self, action: #selector(shareButtonTapped))
         navigationItem.rightBarButtonItem = shareButton
-        
+
+        view.addSubview(tableView)
         tableView.register(BookDetailTitleCell.self, forCellReuseIdentifier: BookDetailTitleCell.cellReuseIdentifier)
         tableView.register(BookDetailSampleAndWishCell.self, forCellReuseIdentifier: BookDetailSampleAndWishCell.cellReuseIdentifier)
         tableView.register(BookDetailBookInfoCell.self, forCellReuseIdentifier: BookDetailBookInfoCell.cellReuseIdentifier)
-        tableView.register(BookDetailRatingAndReviewCell.self, forCellReuseIdentifier: BookDetailRatingAndReviewCell.cellReuseIdentifier)
         tableView.register(BookDetailPublishDateCell.self, forCellReuseIdentifier: BookDetailPublishDateCell.cellReuseIdentifier)
+        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
-        tableView.allowsSelection = false
         tableView.estimatedRowHeight = 300
         tableView.rowHeight = UITableView.automaticDimension
+        tableView.translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func setupConstraint() {
@@ -75,7 +78,10 @@ class BookDetailViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] bookDetail in
                 guard let self else { return }
-                self.sharedContent = ""
+                if let sharedText = viewModel.sharedText {
+                    sharedContent = sharedText
+                }
+                tableView.reloadData()
             })
             .store(in: &cancellables)
         
@@ -83,7 +89,19 @@ class BookDetailViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] message in
                 guard let self else { return }
-                logger("message : \(message)")
+                if let message = message {
+                    showErrorAlert(message: message)
+                }
+            })
+            .store(in: &cancellables)
+        
+        viewModel.$bookImage
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] image in
+                guard let self else { return }
+                if let image = image {
+                    self.sharedImage = image
+                }
             })
             .store(in: &cancellables)
     }
@@ -94,22 +112,119 @@ class BookDetailViewController: UIViewController {
     
     // 공유 버튼이 눌렸을 때
     @objc private func shareButtonTapped() {
-        let itemsToShare = [sharedContent]
+        let itemsToShare: [Any] = [sharedContent, sharedImage as Any]
+        
         DispatchQueue.main.async {
             let activityViewController = UIActivityViewController(activityItems: itemsToShare, applicationActivities: nil)
             activityViewController.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
             self.present(activityViewController, animated: true, completion: nil)
         }
     }
+    
+    private func navigationToDescriptionView(bookTitle: String, description: String) {
+        let bookDescriptionView = BookDetailDescriptionViewController(title: bookTitle, description: description)
+        let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem = backButton
+        self.navigationController?.pushViewController(bookDescriptionView, animated: true)
+    }
 }
 
 extension BookDetailViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return viewModel.dataSource.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell()
-        return cell
+        let item = viewModel.dataSource[indexPath.row]
+        
+        switch item.cellType {
+        case .title:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: BookDetailTitleCell.cellReuseIdentifier, for: indexPath) as? BookDetailTitleCell,
+                    let cellData = item.titleCellInfo
+            else { return UITableViewCell() }
+
+            let title = cellData.title
+            let autors = cellData.autors
+            let pages = cellData.pages
+            
+            cell.configure(viewModel: viewModel, title: title, author: autors, page: pages)
+            
+            return cell
+            
+        case .sampleAndWish:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: BookDetailSampleAndWishCell.cellReuseIdentifier, for: indexPath) as? BookDetailSampleAndWishCell,
+                  let cellData = item.sampleAndWishCellInfo
+            else { return UITableViewCell() }
+            
+            cell.onBuyButtonTapped = {
+                if !self.openWebsite(with: cellData.buyLink) {
+                    self.showErrorAlert(message: .localized(of: .errorMessageNotBuy))
+                }
+            }
+            
+            cell.onWebLinkButtonTapped = {
+                if !self.openWebsite(with: cellData.previewLink) {
+                    self.showErrorAlert(message: .localized(of: .errorMessageNotPreView))
+                }
+            }
+            return cell
+            
+        case .info:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: BookDetailBookInfoCell.cellReuseIdentifier, for: indexPath) as? BookDetailBookInfoCell,
+                  let cellData = item.infoCellData
+            else { return UITableViewCell() }
+            
+            cell.configure(description: cellData.description)
+            
+            let selectedBackgroundView = UIView()
+            selectedBackgroundView.backgroundColor = .lightGray
+            cell.selectedBackgroundView = selectedBackgroundView
+            return cell
+            
+        case .publishDate:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: BookDetailPublishDateCell.cellReuseIdentifier, for: indexPath) as? BookDetailPublishDateCell,
+                  let cellData = item.publishCellData
+            else { return UITableViewCell() }
+            
+            cell.configure(text: cellData.displayText)
+            
+            return cell
+        }
+
+    }
+    
+    func tableView(_ tableView: UITableView, didHighlightRowAt indexPath: IndexPath) {
+        let item = viewModel.dataSource[indexPath.row]
+        
+        if item.cellType == .info {
+            if let cell = tableView.cellForRow(at: indexPath) {
+                cell.contentView.backgroundColor = .lightGray
+            }
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didUnhighlightRowAt indexPath: IndexPath) {
+        let item = viewModel.dataSource[indexPath.row]
+        
+        if item.cellType == .info {
+            if let cell = tableView.cellForRow(at: indexPath) {
+                cell.contentView.backgroundColor = .clear
+            }
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        let item = viewModel.dataSource[indexPath.row]
+        return item.cellType == .info
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let item = viewModel.dataSource[indexPath.row]
+        if item.cellType == .info {
+            //설명 상세보기로 이동
+            guard let cellData = item.infoCellData else { return}
+            navigationToDescriptionView(bookTitle: cellData.bookTitle, description: cellData.description)
+        }
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }

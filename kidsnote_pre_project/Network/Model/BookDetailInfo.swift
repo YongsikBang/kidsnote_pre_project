@@ -28,12 +28,17 @@ struct DetailVolumeInfo: Codable {
     let imageLinks: DetailImageLinks?
     let language: String?
     let infoLink: String?
+    let previewLink: String?
     let canonicalVolumeLink: String?
 }
 
 struct DetailImageLinks: Codable {
     let smallThumbnail, thumbnail: String?
     let small, mediumlarge, extraLarge: String?
+    
+    func getThumbnailUrl() -> String? {
+        return self.thumbnail?.replacingOccurrences(of: "http://", with: "https://")
+    }
 }
 
 struct SaleInfo: Codable {

@@ -201,13 +201,7 @@ class HomeViewController: UIViewController {
         
     }
     
-    private func showErrorAlert(message: String) {
-        let alert = UIAlertController(title: .localized(of: .alertErrorTitle), message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: .localized(of: .alertOK), style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
-    }
-    
-    enum NextViewType {
+   private enum NextViewType {
         case category
         case detail
     }
