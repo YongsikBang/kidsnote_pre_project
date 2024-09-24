@@ -14,7 +14,11 @@ class HomeViewController: UIViewController {
     private var viewModel = HomeViewControllerViewModel()
     private var cancellables = Set<AnyCancellable>()
     
-    private let searchBar = UISearchBar()
+    private let searchBar: UISearchBar = {
+        let view = UISearchBar()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     
     private let topStackView: UIStackView = {
         let stack = UIStackView()
@@ -71,13 +75,22 @@ class HomeViewController: UIViewController {
         bindViewModel()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+    
     private func setupConfigure() {
         view.backgroundColor = .white
         
         view.addSubview(searchBar)
         searchBar.placeholder = .localized(of: .searchBarPlaceHolder)
         searchBar.delegate = self
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
         searchBar.searchBarStyle = .minimal
         
         view.addSubview(topStackView)
@@ -201,7 +214,7 @@ class HomeViewController: UIViewController {
         
     }
     
-   private enum NextViewType {
+    private enum NextViewType {
         case category
         case detail
     }
@@ -227,11 +240,28 @@ class HomeViewController: UIViewController {
 
 extension HomeViewController: UISearchBarDelegate {
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        searchBar.becomeFirstResponder()
+        let searchViewController = SearchViewController()
+        
+        let navController = UINavigationController(rootViewController: searchViewController)
+        
+        navController.transitioningDelegate = self
+        navController.modalPresentationStyle = .overFullScreen
+        
+        present(navController, animated: true, completion: {
+            searchBar.resignFirstResponder()
+        })
+        
+    }
+}
+
+extension HomeViewController: UIViewControllerTransitioningDelegate {
+    
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return SearchTransitionAnimator(isPresenting: true)
     }
     
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return SearchTransitionAnimator(isPresenting: false)
     }
 }
 
@@ -261,3 +291,4 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         return UITableView.automaticDimension
     }
 }
+
