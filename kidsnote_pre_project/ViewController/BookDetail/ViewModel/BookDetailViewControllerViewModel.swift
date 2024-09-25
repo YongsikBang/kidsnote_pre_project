@@ -85,16 +85,16 @@ class BookDetailViewControllerViewModel: NSObject, ObservableObject {
     
     private func createTitleCellData(_ response: BookDetailInfo) -> BookDetailData? {
         let title = response.volumeInfo.title
-        let authors = response.volumeInfo.authors?.joined(separator: ", ") ?? (response.volumeInfo.publisher ?? "")
+        let authors = response.volumeInfo.displayAuthors
         let pages = "\(response.volumeInfo.pageCount ?? 0)" + .localized(of: .page)
-        
-        let cellInfo = BookDetailTitleCellData(title: title, autors: authors, pages: pages)
+        let isEbook = response.saleInfo?.isEbook ?? false
+        let cellInfo = BookDetailTitleCellData(title: title, autors: authors, pages: pages, isEbook: isEbook)
         return BookDetailData(cellType: .title, titleCellInfo: cellInfo)
     }
     
     private func createSampleAndWishCellData(_ response: BookDetailInfo) -> BookDetailData? {
         guard let previewLink = response.volumeInfo.previewLink,
-              let buyLink = response.saleInfo?.buyLink
+              let buyLink = response.saleInfo?.buyLink ?? response.volumeInfo.infoLink
         else { return nil }
         
         let cellInfo = BookDetailSampleAndWishCellData(previewLink: previewLink, buyLink: buyLink)
@@ -149,6 +149,12 @@ struct BookDetailTitleCellData {
     let title: String
     let autors: String
     let pages: String
+    let isEbook: Bool
+    
+    var displayPages: String {
+        var text =  isEbook ? String.localized(of: .subjectTypeEbook)  : String.localized(of: .subjectTypeAudioBook)
+        return text + " · " + pages
+    }
 }
 
 struct BookDetailSampleAndWishCellData {
@@ -178,7 +184,7 @@ struct BookDetailPublishCellData {
             
             return "\(formattedDate) · \(publisher)"
         } else {
-            return ""
+            return publishedDate
         }
     }
     

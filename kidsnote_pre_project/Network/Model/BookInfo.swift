@@ -19,6 +19,7 @@ struct BookItem: Codable {
     let etag: String
     let selfLink: String
     let volumeInfo: VolumeInfo
+    let saleInfo: SaleInfo?
 }
 
 struct VolumeInfo: Codable {
@@ -26,9 +27,27 @@ struct VolumeInfo: Codable {
     let authors: [String]?
     let publisher: String?
     let publishedDate: String?
+    let averageRating: Double?
     let description: String?
     let industryIdentifiers: [IndustryIdentifier]?
     let imageLinks: ImageLinks?
+    
+    var displayAuthors: String {
+        return authors?.joined(separator: ", ") ?? (publisher ?? "Unknown Author")
+    }
+    
+    var displayRatingString: String {
+        return "\(averageRating ?? 0)"
+    }
+    
+    var hiddenRating: Bool {
+        return averageRating ?? 0 > 0 ? false : true
+    }
+}
+
+struct SaleInfo: Codable {
+    let country, saleability: String?
+    let isEbook: Bool
 }
 
 struct IndustryIdentifier: Codable {

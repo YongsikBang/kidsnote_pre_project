@@ -11,7 +11,7 @@ struct BookDetailInfo: Codable {
     let kind, id, etag: String
     let selfLink: String
     let volumeInfo: DetailVolumeInfo
-    let saleInfo: SaleInfo?
+    let saleInfo: DetailSaleInfo?
 }
 
 struct DetailVolumeInfo: Codable {
@@ -30,6 +30,10 @@ struct DetailVolumeInfo: Codable {
     let infoLink: String?
     let previewLink: String?
     let canonicalVolumeLink: String?
+    
+    var displayAuthors: String {
+        return authors?.joined(separator: ", ") ?? (publisher ?? "Unknown Author")
+    }
 }
 
 struct DetailImageLinks: Codable {
@@ -41,7 +45,7 @@ struct DetailImageLinks: Codable {
     }
 }
 
-struct SaleInfo: Codable {
+struct DetailSaleInfo: Codable {
     let country, saleability: String?
     let isEbook: Bool?
     let listPrice, retailPrice: Price?

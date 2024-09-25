@@ -12,8 +12,10 @@ class NetworkManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate {
     private let apiKey: String = "AIzaSyAKd6UY-a3q9xUWAT57DN8uHA6T7KkoxZ8"
     
     // searchBooks 함수: async/await로 변환
+    // 최대 개수 40개까지
+    // 나중에 페이징 처리 고도화 필요
     func searchBooks(query: String) async throws -> BookInfo {
-        let urlString = "https://www.googleapis.com/books/v1/volumes?q=\(query)&key=\(apiKey)"
+        let urlString = "https://www.googleapis.com/books/v1/volumes?q=\(query)&maxResults=40&key=\(apiKey)"
         guard let url = URL(string: urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!) else {
             throw URLError(.badURL)
         }
@@ -89,14 +91,4 @@ class NetworkManager: NSObject, URLSessionDelegate, URLSessionTaskDelegate {
             }
             .eraseToAnyPublisher()
     }
-    
-    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-            // SSL 인증서 확인을 무시하고 모든 인증서를 신뢰 (개발 중에만 사용)
-            if let serverTrust = challenge.protectionSpace.serverTrust {
-                let credential = URLCredential(trust: serverTrust)
-                completionHandler(.useCredential, credential)
-            } else {
-                completionHandler(.performDefaultHandling, nil)
-            }
-        }
 }

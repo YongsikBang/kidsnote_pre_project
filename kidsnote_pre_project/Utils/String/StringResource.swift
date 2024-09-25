@@ -29,4 +29,11 @@ extension LocalizedString {
     
     static let errorMessageNotBuy = makeInfo("errorMessage_not_buy", "구매페이지가 제공되지 않습니다.", "구매 불가 오류 문구")
     static let errorMessageNotPreView = makeInfo("errorMessage_not_preview", "미리보기가 제공되지 않습니다.", "미리보기 오류 문구")
+    
+    static let searchInfoText = makeInfo("searchInfo_text", "Google Play 검색결과", "searchviewcontroller 첫번째 셀에 표시되는 안내 문구")
+    
+    static let searchTextfieldPlaceHolder = makeInfo("searchtextfield_placeholder", "Play 북에서 검색", "검색화면 placeholder")
+    
+    static let subjectTypeEbook = makeInfo("subject_type_ebook", "eBook", "")
+    static let subjectTypeAudioBook = makeInfo("subject_type_audiobook", "오디오북", "")
 }

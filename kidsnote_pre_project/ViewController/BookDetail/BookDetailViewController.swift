@@ -145,7 +145,7 @@ extension BookDetailViewController: UITableViewDelegate, UITableViewDataSource {
 
             let title = cellData.title
             let autors = cellData.autors
-            let pages = cellData.pages
+            let pages = cellData.displayPages
             
             cell.configure(viewModel: viewModel, title: title, author: autors, page: pages)
             

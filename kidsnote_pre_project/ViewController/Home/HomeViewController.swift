@@ -68,6 +68,8 @@ class HomeViewController: UIViewController {
     let ebookSearchArray = ["추천 ebook", "건강/정신/신체", "소설/문학", "번들 할인", "만화", "최다 판매 eBook"]
     let audioBookSearchArray = ["추천 오디오북", "자서전/전기", "비즈니스/투자", "자기계발", "최다 판매 오디오북"]
     
+    var currentSubjectType: SubjectType = .eBook
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupConfigure()
@@ -181,35 +183,32 @@ class HomeViewController: UIViewController {
     
     private func requestEBookInfo() {
         Task {
-            await viewModel.requestInitBookInfo(searchTextArray: ebookSearchArray)
+            await viewModel.requestInitBookInfo(searchTextArray: ebookSearchArray, subject: currentSubjectType)
         }
         ebookButton.isSelected = true
         
     }
     
     @objc private func topButtonTapped(_ sender: UIButton) {
-        // ViewModel에서 데이터 로드 중인 경우 버튼 동작을 막음
-        if viewModel.isLoading {
+        guard !viewModel.isLoading else {
             logger("Data is currently loading, please wait")
             return
         }
         
-        topButtons.forEach { $0.isSelected = false}
-        sender.isSelected = true
+        topButtons.forEach { $0.isSelected = ($0 == sender) }
         
-        let searchTextArray: [String]
-        
-        switch sender {
-        case ebookButton:
-            searchTextArray = ebookSearchArray
-        case audioBookButton:
-            searchTextArray = audioBookSearchArray
-        default:
-            searchTextArray = ebookSearchArray
-        }
+        let searchTextArray: [String] = {
+            if sender == audioBookButton {
+                currentSubjectType = .audioBook
+                return audioBookSearchArray
+            } else {
+                currentSubjectType = .eBook
+                return ebookSearchArray
+            }
+        }()
         
         Task {
-            await viewModel.requestInitBookInfo(searchTextArray: searchTextArray)
+            await viewModel.requestInitBookInfo(searchTextArray: searchTextArray, subject: currentSubjectType)
         }
         
     }
@@ -227,7 +226,7 @@ class HomeViewController: UIViewController {
         case .category:
             guard let categoryTitle = categoryTitle else { return }
             let categoryViewModel = CategoryViewControllerViewModel(searchText: categoryTitle)
-            let categoryView = CategoryViewController(categoryTitle: categoryTitle, viewModel: categoryViewModel)
+            let categoryView = CategoryViewController(categoryTitle: categoryTitle, viewModel: categoryViewModel, subject: currentSubjectType)
             self.navigationController?.pushViewController(categoryView, animated: true)
         case .detail:
             guard let bookID = bookID else { return }

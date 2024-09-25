@@ -75,30 +75,25 @@ class HomeBookCollectionViewCell: UICollectionViewCell {
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            // bookImageView constraints
             bookImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             bookImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             bookImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             
-            // titleLabel constraints
             titleLabel.topAnchor.constraint(equalTo: bookImageView.bottomAnchor, constant: 8),
             titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             titleLabel.heightAnchor.constraint(equalToConstant: 12),
             
-            // authorLabel constraints
             authorLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
             authorLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             authorLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             authorLabel.heightAnchor.constraint(equalToConstant: 12),
             
-            // ratingLabel constraints
             ratingLabel.topAnchor.constraint(equalTo: authorLabel.bottomAnchor),
             ratingLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             ratingLabel.heightAnchor.constraint(equalToConstant: 12),
             ratingLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
-            // starImageView constraints (별표는 ratingLabel 옆에 배치) - 현재는 rating이 없어서 사용안함
             starImageView.centerYAnchor.constraint(equalTo: ratingLabel.centerYAnchor),
             starImageView.leadingAnchor.constraint(equalTo: ratingLabel.trailingAnchor, constant: 4),
             starImageView.widthAnchor.constraint(equalToConstant: 12),
@@ -111,7 +106,7 @@ class HomeBookCollectionViewCell: UICollectionViewCell {
         titleLabel.text = viewModel.title
         authorLabel.text = viewModel.author
         ratingLabel.text = viewModel.rating
-        starImageView.isHidden = true
+        starImageView.isHidden = viewModel.ratingHidden
         
         cancellables.forEach { $0.cancel() }
         cancellables.removeAll()

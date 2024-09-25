@@ -9,7 +9,7 @@ import Foundation
 import Combine
 import UIKit
 
-final class HomeViewControllerViewModel: NSObject, ObservableObject {
+class HomeViewControllerViewModel: NSObject, ObservableObject {
     private let networkManager = NetworkManager()
     private var cancellables = Set<AnyCancellable>()
     
@@ -43,15 +43,20 @@ final class HomeViewControllerViewModel: NSObject, ObservableObject {
         }
     }
     
-    func requestInitBookInfo(searchTextArray: [String]) async {
-        isLoading = true  // 데이터 로드 시작 시 로딩 상태를 true로 설정
+    func requestInitBookInfo(searchTextArray: [String], subject: SubjectType) async {
+        isLoading = true
         
         let homeBookInfoStore = HomeBookInfoStore()
         await withTaskGroup(of: HomeBookInfo?.self) { group in
             for (index, text) in searchTextArray.enumerated() {
                 group.addTask {
                     do {
-                        let results = try await self.search(text: text)
+                        let results = try await self.search(text: text).compactMap { bookInfo -> BookItem? in
+                            guard let isEbook = bookInfo.saleInfo?.isEbook else { return nil }
+                            return (subject == .eBook && isEbook) || (subject == .audioBook && !isEbook) ? bookInfo : nil
+                        }
+                        
+                        guard !results.isEmpty else { return nil }
                         return HomeBookInfo(index: index, categoryTitle: text, bookInfos: results)
                     } catch {
                         logger("Error occurred while searching for \(text): \(error)")
@@ -91,12 +96,13 @@ struct HomeBookInfo {
     let bookInfos: [BookItem]
 }
 
-class BookItemViewModel: NSObject, ObservableObject {
+final class BookItemViewModel: NSObject, ObservableObject {
     let title: String
     let author: String
-    let rating: String // rating 데이터가 없어서 publishedDate로 대체
+    let rating: String
     let imageUrl: String?
     let bookItem: BookItem
+    let ratingHidden: Bool
     
     @Published private(set) var bookImage: UIImage?
     @Published private(set) var bookImageSize: CGSize = .zero
@@ -104,8 +110,9 @@ class BookItemViewModel: NSObject, ObservableObject {
     init(item: BookItem) {
         self.bookItem = item
         self.title = bookItem.volumeInfo.title
-        self.author = bookItem.volumeInfo.authors?.joined(separator: ", ") ?? "Unknown Author"
-        self.rating = bookItem.volumeInfo.publishedDate ?? ""
+        self.author = bookItem.volumeInfo.displayAuthors
+        self.rating = bookItem.volumeInfo.averageRating ?? 0 > 0 ? bookItem.volumeInfo.displayRatingString : bookItem.volumeInfo.publishedDate ?? ""
+        self.ratingHidden = bookItem.volumeInfo.hiddenRating
         
         let thumbnailUrl = bookItem.volumeInfo.imageLinks?.getThumbnailUrl()
         self.imageUrl = thumbnailUrl
@@ -113,12 +120,12 @@ class BookItemViewModel: NSObject, ObservableObject {
         super.init()
         
         DispatchQueue.main.async {
-            self.loadImage()
+            self.loadImage(url: self.imageUrl)
         }
     }
     
-    private func loadImage() {
-        guard let imageUrl = imageUrl, let url = URL(string: imageUrl) else {
+    private func loadImage(url: String?) {
+        guard let imageUrl = url, let url = URL(string: imageUrl) else {
             self.bookImage = UIImage(systemName: "photo")
             self.bookImageSize = .zero
             return

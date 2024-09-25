@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2D2236FC2CA3D008006C99A0 /* SearchViewControllerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2236FB2CA3D008006C99A0 /* SearchViewControllerViewModel.swift */; };
+		2D2237022CA3E2E8006C99A0 /* SearchViewControllerTableViewDataCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2237012CA3E2E8006C99A0 /* SearchViewControllerTableViewDataCell.swift */; };
+		2D2237042CA3E2F2006C99A0 /* SearchViewControllerTableViewTitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2237032CA3E2F2006C99A0 /* SearchViewControllerTableViewTitleCell.swift */; };
 		2D5AF43B2CA1597C00E08686 /* BookDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5AF43A2CA1597C00E08686 /* BookDetailViewController.swift */; };
 		2D5AF43E2CA15B0500E08686 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5AF43D2CA15B0500E08686 /* CategoryViewController.swift */; };
 		2D5AF4412CA15B6B00E08686 /* CategoryViewControllerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D5AF4402CA15B6B00E08686 /* CategoryViewControllerViewModel.swift */; };
@@ -66,6 +69,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2D2236FB2CA3D008006C99A0 /* SearchViewControllerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewControllerViewModel.swift; sourceTree = "<group>"; };
+		2D2237012CA3E2E8006C99A0 /* SearchViewControllerTableViewDataCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewControllerTableViewDataCell.swift; sourceTree = "<group>"; };
+		2D2237032CA3E2F2006C99A0 /* SearchViewControllerTableViewTitleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewControllerTableViewTitleCell.swift; sourceTree = "<group>"; };
 		2D5AF43A2CA1597C00E08686 /* BookDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookDetailViewController.swift; sourceTree = "<group>"; };
 		2D5AF43D2CA15B0500E08686 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		2D5AF4402CA15B6B00E08686 /* CategoryViewControllerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewControllerViewModel.swift; sourceTree = "<group>"; };
@@ -136,6 +142,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2D2236F92CA3CFE9006C99A0 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				2D2237032CA3E2F2006C99A0 /* SearchViewControllerTableViewTitleCell.swift */,
+				2D2237012CA3E2E8006C99A0 /* SearchViewControllerTableViewDataCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		2D2236FA2CA3CFF0006C99A0 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				2D2236FB2CA3D008006C99A0 /* SearchViewControllerViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		2D5AF4392CA1595600E08686 /* BookDetail */ = {
 			isa = PBXGroup;
 			children = (
@@ -195,6 +218,8 @@
 		2D7433342CA2F929001998D9 /* Search */ = {
 			isa = PBXGroup;
 			children = (
+				2D2236F92CA3CFE9006C99A0 /* View */,
+				2D2236FA2CA3CFF0006C99A0 /* ViewModel */,
 				2D7433352CA2F93F001998D9 /* SearchViewController.swift */,
 			);
 			path = Search;
@@ -503,6 +528,7 @@
 				2D5AF43E2CA15B0500E08686 /* CategoryViewController.swift in Sources */,
 				2DC073EF2C9ED34700C10768 /* BookDetailInfo.swift in Sources */,
 				2DC073F42C9FF9EB00C10768 /* UITableViewCell+Extension.swift in Sources */,
+				2D2236FC2CA3D008006C99A0 /* SearchViewControllerViewModel.swift in Sources */,
 				2DC073D82C9EA37800C10768 /* HomeViewController.swift in Sources */,
 				2D74332D2CA2B35A001998D9 /* UIViewController+Extension.swift in Sources */,
 				2DC073F22C9FF92200C10768 /* HomeTableViewItemCell.swift in Sources */,
@@ -521,12 +547,14 @@
 				2DC073DD2C9EB44200C10768 /* LocalizedString.swift in Sources */,
 				2DC073A42C9E9BF400C10768 /* AppDelegate.swift in Sources */,
 				2D7433212CA1A8DD001998D9 /* BookDetailBookInfoCell.swift in Sources */,
+				2D2237022CA3E2E8006C99A0 /* SearchViewControllerTableViewDataCell.swift in Sources */,
 				2D7433272CA1A9D0001998D9 /* BookDetailTitleCell.swift in Sources */,
 				2DC073EA2C9EBC5300C10768 /* BookInfo.swift in Sources */,
 				2DC073F82CA03C5000C10768 /* HomeBookCollectionViewCell.swift in Sources */,
 				2DC073A62C9E9BF400C10768 /* SceneDelegate.swift in Sources */,
 				2D7433312CA2F051001998D9 /* UITextView+Extension.swift in Sources */,
 				2D5AF4412CA15B6B00E08686 /* CategoryViewControllerViewModel.swift in Sources */,
+				2D2237042CA3E2F2006C99A0 /* SearchViewControllerTableViewTitleCell.swift in Sources */,
 				2D7433232CA1A8F5001998D9 /* BookDetailViewControllerViewModel.swift in Sources */,
 				2D5AF43B2CA1597C00E08686 /* BookDetailViewController.swift in Sources */,
 				2DC073D42C9EA22B00C10768 /* SplashViewController.swift in Sources */,

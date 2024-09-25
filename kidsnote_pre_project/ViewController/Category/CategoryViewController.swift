@@ -12,6 +12,7 @@ class CategoryViewController: UIViewController {
     
     private let categoryTitle: String
     private let viewModel: CategoryViewControllerViewModel
+    private let subjectType: SubjectType
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -25,9 +26,10 @@ class CategoryViewController: UIViewController {
         return collectionView
     }()
     
-    init(categoryTitle: String, viewModel: CategoryViewControllerViewModel) {
+    init(categoryTitle: String, viewModel: CategoryViewControllerViewModel, subject: SubjectType) {
         self.categoryTitle = categoryTitle
         self.viewModel = viewModel
+        self.subjectType = subject
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -67,7 +69,7 @@ class CategoryViewController: UIViewController {
     }
     
     private func bindViewModel() {
-        viewModel.requestCategoryBookList(text: categoryTitle)
+        viewModel.requestCategoryBookList(text: categoryTitle, subject: subjectType)
         
         viewModel.$dataSource
             .receive(on: DispatchQueue.main)

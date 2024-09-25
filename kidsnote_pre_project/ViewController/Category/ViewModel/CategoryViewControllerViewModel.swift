@@ -33,10 +33,12 @@ class CategoryViewControllerViewModel: NSObject, ObservableObject {
         }
     }
     
-    func requestCategoryBookList(text: String) {
+    func requestCategoryBookList(text: String, subject: SubjectType) {
         Task {
-            let results = try await self.search(text: text)
-            logger("result : \(results)",options: [.codePosition])
+            let results: [BookItem] = try await self.search(text: text).compactMap { bookInfo in
+                guard let isEbook = bookInfo.saleInfo?.isEbook else { return nil }
+                return (subject == .eBook && isEbook) || (subject == .audioBook && !isEbook) ? bookInfo : nil
+            }
             self.dataSource = results
             
             collectionViewModelList = self.dataSource.map { CategoryCollectionViewModel(item: $0)}
